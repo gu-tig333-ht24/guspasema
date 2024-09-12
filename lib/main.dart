@@ -35,6 +35,16 @@ class MyHomePage extends StatelessWidget {
     List<Task> tasks = [
       Task("Do HomeWork", false),
       Task("Write a book", false),
+      Task("Do HomeWork", false),
+      Task("Write a book", false),
+      Task("Do HomeWork", false),
+      Task("Write a book", false),
+      Task("Do HomeWork", false),
+      Task("Write a book", false),
+      Task("Do HomeWork", false),
+      Task("Write a book", false),
+      Task("Do HomeWork", false),
+      Task("Write a book", false),
     ];
     return Scaffold(
       appBar: AppBar(title: const Text("TIG333 TODO")),
@@ -43,16 +53,19 @@ class MyHomePage extends StatelessWidget {
             .map((task) => _item(context, task.taskName, task.isComplete))
             .toList(), //map är en iterator som returerar en lista
       ),
+
+      //när du klickar på knappen så kommer du navigeras till AddTask vyn
+      //den gör detta via en stack, och vyn pushas till toppen av stacken med funktionen push
+      floatingActionButton: FloatingActionButton(onPressed: () {
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => AddTask()));
+      }),
     );
   }
 
   Widget _item(BuildContext context, task, bool isComplete) {
     return GestureDetector(
-      onTap: () {
-        //när du klickar på raden så kommer du navigeras till TaskInfo vyn
-        Navigator.push(
-            context, MaterialPageRoute(builder: (context) => TaskInfo()));
-      },
+      onTap: () {},
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -78,11 +91,38 @@ class MyHomePage extends StatelessWidget {
   }
 }
 
-class TaskInfo extends StatelessWidget {
+class AddTask extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Padding(
+              padding: EdgeInsets.fromLTRB(15, 10, 15, 10),
+              child: TextField(
+                decoration: InputDecoration(
+                    hintStyle: TextStyle(color: Colors.black.withOpacity(0.3)),
+                    hintText: "What are you going to do?"),
+              ),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                IconButton(
+                  icon: Icon(Icons.add),
+                  onPressed: () {},
+                ),
+                Text("Add"),
+              ],
+            )
+          ],
+        ),
+      ),
     );
   }
 }
