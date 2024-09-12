@@ -23,18 +23,34 @@ class MyHomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Test")),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            color: Colors.red,
+        appBar: AppBar(title: const Text("TIG333 TODO")),
+        body: Column(children: [
+          _item("Write a book"),
+          _item("Do homework"),
+        ]));
+  }
+
+  Widget _item(String task) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Padding(
+          padding: EdgeInsets.fromLTRB(15, 10, 15, 10),
+          child: Checkbox(value: false, onChanged: (bool? value) {}),
+        ),
+        Expanded(
+          child: Text(
+            task,
+            style: TextStyle(fontSize: 24),
+            textAlign: TextAlign.left,
           ),
-          Container(
-            color: Colors.blue,
-          ),
-        ],
-      ),
+        ),
+        Padding(
+          padding: EdgeInsets.all(15),
+          child: Icon(Icons.close),
+        )
+      ],
     );
   }
 }
