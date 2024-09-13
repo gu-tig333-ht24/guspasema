@@ -76,10 +76,8 @@ class MyHomePage extends StatelessWidget {
         children: tasks
             .map((task) => _item(context, task.taskName, task.isComplete))
             .toList(), //map är en iterator som returerar en lista
-      ),
-      //när du klickar på knappen så kommer du navigeras till AddTask vyn
+      ), //när du klickar på knappen så kommer du navigeras till AddTask vyn
       //den gör detta via en stack, och vyn pushas till toppen av stacken med funktionen push
-
       floatingActionButton: RawMaterialButton(
         onPressed: () {
           Navigator.push(
@@ -95,34 +93,34 @@ class MyHomePage extends StatelessWidget {
       ),
     );
   }
+}
 
-  Widget _item(BuildContext context, task, bool isComplete) {
-    return GestureDetector(
-      //gesture detect används eftersom det inte är en knapp utan bara en lista med items
-      onTap: () {},
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Padding(
-            padding: EdgeInsets.fromLTRB(15, 10, 15, 10),
-            child: Checkbox(value: false, onChanged: (bool? value) {}),
+Widget _item(BuildContext context, task, bool isComplete) {
+  return GestureDetector(
+    //gesture detect används eftersom det inte är en knapp utan bara en lista med items
+    onTap: () {},
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Padding(
+          padding: EdgeInsets.fromLTRB(15, 10, 15, 10),
+          child: Checkbox(value: false, onChanged: (bool? value) {}),
+        ),
+        Expanded(
+          child: Text(
+            task,
+            style: TextStyle(fontSize: 24),
+            textAlign: TextAlign.left,
           ),
-          Expanded(
-            child: Text(
-              task,
-              style: TextStyle(fontSize: 24),
-              textAlign: TextAlign.left,
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.all(15),
-            child: Icon(Icons.close),
-          )
-        ],
-      ),
-    );
-  }
+        ),
+        Padding(
+          padding: EdgeInsets.all(15),
+          child: Icon(Icons.close),
+        )
+      ],
+    ),
+  );
 }
 
 //add task vyn, man kommer hit genom att trycka pluset i homepage vyn
