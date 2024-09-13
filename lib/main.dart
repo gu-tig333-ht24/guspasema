@@ -33,17 +33,17 @@ class MyHomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     //skapar en lista med tasks och väljer deras defualtvärden
     List<Task> tasks = [
-      Task("Do HomeWork", false),
+      Task("Do Homework", false),
       Task("Write a book", false),
-      Task("Do HomeWork", false),
+      Task("Do Homework", false),
       Task("Write a book", false),
-      Task("Do HomeWork", false),
+      Task("Do Homework", false),
       Task("Write a book", false),
-      Task("Do HomeWork", false),
+      Task("Do Homework", false),
       Task("Write a book", false),
-      Task("Do HomeWork", false),
+      Task("Do Homework", false),
       Task("Write a book", false),
-      Task("Do HomeWork", false),
+      Task("Do Homework", false),
       Task("Write a book", false),
     ];
     return Scaffold(
