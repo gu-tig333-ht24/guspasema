@@ -109,6 +109,7 @@ class MyHome extends StatelessWidget {
 
 Widget _item(BuildContext context, Task task) {
   var tasks = context.watch<MyState>().tasks;
+  var filteredList = context.watch<MyState>().filteredTasks;
 
   return GestureDetector(
     //gesture detect används eftersom det inte är en knapp utan bara en lista med items

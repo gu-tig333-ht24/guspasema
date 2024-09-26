@@ -29,9 +29,7 @@ class MyState extends ChangeNotifier {
     } else {
       _filteredTasks = _tasks.where((i) => i.isComplete == false).toList();
     }
-
-    _listDone = _tasks.where((i) => i.isComplete = true).toList();
-    _listunDone = _tasks.where((i) => i.isComplete = false).toList();
+    notifyListeners();
   }
 
   List<Task> getFilteredList() {
