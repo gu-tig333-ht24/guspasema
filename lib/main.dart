@@ -1,90 +1,7 @@
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
-
-class MyState extends ChangeNotifier {
-  final List<Task> _tasks = [];
-  String _textFieldValue = "";
-  int _taskId = 0;
-  Task _task = Task("temp", true, 0);
-
-  List<Task> _listDone = [];
-  List<Task> _listunDone = [];
-
-  List get tasks => _tasks;
-  List get listDone => _listDone;
-  List get listunDone => _listunDone;
-  String get textFieldValue => _textFieldValue;
-  int get taskId => _taskId;
-  Task get task => _task;
-
-  void filterLists() {
-    _listDone = _tasks.where((i) => i.isComplete = true).toList();
-    _listunDone = _tasks.where((i) => i.isComplete = false).toList();
-  }
-
-  List<Task> getWholeList() {
-    return _tasks;
-  }
-
-  List<Task> getListDone() {
-    return _listDone;
-  }
-
-  List<Task> GetlistunDone() {
-    return _listunDone;
-  }
-
-  bool? getValue(Task task) {
-    notifyListeners();
-    return _task.isComplete;
-  }
-
-  void reassignId() {
-    for (int i = 0; i < _tasks.length; i++) {
-      _tasks[i]._taskId = i;
-    }
-  }
-
-  void setTask(task) {
-    _task = task;
-  }
-
-  void changeValue(id, boolean) {
-    tasks[id].isComplete = boolean;
-
-    notifyListeners();
-  }
-
-  void increamentId() {
-    _taskId++;
-    notifyListeners();
-  }
-
-  void decreaseId() {
-    _taskId--;
-    notifyListeners();
-  }
-
-  void updateTextFieldValue(String text) {
-    _textFieldValue = text;
-    notifyListeners();
-  }
-
-  void addToList(task) {
-    tasks.add(task);
-    notifyListeners();
-  }
-
-  void removeFromList(task) {
-    tasks.removeWhere((item) => item.id == task);
-    notifyListeners();
-  }
-
-  void removeAtList(Task task) {
-    tasks.removeAt(task._taskId);
-    notifyListeners();
-  }
-}
+import 'MyState.dart';
+import 'Task.dart';
 
 void main() {
   MyState state = MyState();
@@ -109,28 +26,12 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class Task {
-  String taskName = "no name";
-  bool? isComplete = true;
-  int _taskId = 0;
-
-  int get id => _taskId;
-
-  Task(this.taskName, this.isComplete, this._taskId) {
-    _taskId++;
-  } //constructor för task
-
-  void decreaseId() {
-    _taskId--;
-  }
-}
-
 class MyHome extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    var tasks = context.watch<MyState>().tasks;
-    var filteredList = context.watch<MyState>().tasks;
+    var filteredList = context.watch<MyState>().filteredTasks;
+    //var filteredList = context.watch<MyState>().tasks;
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -159,23 +60,27 @@ class MyHome extends StatelessWidget {
                   ],
               onSelected: (result) {
                 if (result == 0) {
-                  context.read<MyState>().filterLists();
-                  filteredList = context.read<MyState>().getWholeList();
+                  context.read<MyState>().filterLists(null);
+                  print(context.read<MyState>().filteredTasks);
+                  //filteredList = context.read<MyState>().getWholeList();
                 } else if (result == 1) {
-                  context.read<MyState>().filterLists();
-                  filteredList = context.read<MyState>().getListDone();
-                  //print(context.read<MyState>()._tasks);
+                  context.read<MyState>().filterLists(true);
+                  //filteredList = context.read<MyState>().getListDone();
+                  print(context.read<MyState>().filteredTasks);
                   print(filteredList);
                 } else if (result == 2) {
-                  context.read<MyState>().filterLists();
-                  filteredList = context.read<MyState>().GetlistunDone();
+                  context.read<MyState>().filterLists(false);
+                  print(context.read<MyState>().filteredTasks);
+                  //filteredList = context.read<MyState>().GetlistunDone();
                 }
               }),
         ],
       ),
       body: Consumer<MyState>(
         builder: (context, state, _) => ListView(
-          children: filteredList
+          children: context
+              .watch<MyState>()
+              .filteredTasks
               .map((task) => _item(context, task))
               .toList(), //map är en iterator som returerar en lista
         ),
@@ -218,7 +123,7 @@ Widget _item(BuildContext context, Task task) {
             builder: (context, state, _) => Checkbox(
                 tristate: false,
                 activeColor: Colors.black,
-                value: state._tasks[task.id].isComplete,
+                value: state.tasks[task.id].isComplete,
                 onChanged: (isComplete) {
                   context.read<MyState>().setTask(task);
                   context.read<MyState>().changeValue(task.id, isComplete);
@@ -229,7 +134,7 @@ Widget _item(BuildContext context, Task task) {
           child: Consumer<MyState>(
             builder: (context, state, _) => Text(
               task.taskName,
-              style: state._tasks[task.id].isComplete!
+              style: state.tasks[task.id].isComplete!
                   ? TextStyle(
                       decoration: TextDecoration.lineThrough, fontSize: 24)
                   : TextStyle(fontSize: 24),
