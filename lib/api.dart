@@ -7,7 +7,6 @@ import 'dart:convert';
 import 'model.dart';
 import 'package:flutter/material.dart';
 
-void Dostuff() async {}
 const String ENDPOINT = 'https://todoapp-api.apps.k8s.gu.se';
 
 Future<List<Task>> getTasks() async {
@@ -22,7 +21,14 @@ Future<List<Task>> getTasks() async {
   List tasksJson = jsonDecode(body);
   //print(todosJson.length);
   print('this is title');
-  print('${tasksJson[1]['title']}');
+  if (tasksJson.length != 0) {
+    print('${tasksJson[tasksJson.length - 1]['title']}');
+    print('${tasksJson[tasksJson.length - 1]}');
+    print('body: ${response.body}');
+    print('Status ${response.statusCode}');
+    print('length ${tasksJson.length}');
+  }
+
   return tasksJson.map((json) => Task.fromJson(json)).toList();
 }
 
@@ -31,21 +37,31 @@ Future<void> addTask(Task task) async {
       Uri.parse('$ENDPOINT/todos?key=60175dcf-1ee6-4f12-9544-c0c253e0d60c'),
       headers: {"Content-Type": "applications/json"},
       body: jsonEncode(task.toJson()));
-  var jsonData = response.body;
-  var obj = jsonDecode(jsonData);
-  print('this is add response');
+  var jsonData = response.body; //debug
+  var obj = jsonDecode(jsonData); //debug
+  print('this is add response'); //debug
   //print('${obj['done']}');
-  print(response.body);
-  print('title');
-  print('done');
+  print(response.body); //debug
+  print('title'); //debug
+  print('done'); //debug
 }
 
 Future<void> deleteTask(task) async {
-  final response = await http.delete(
+  http.Response response = await http.delete(
     Uri.parse(
         'https://todoapp-api.apps.k8s.gu.se/todos/${task.id}?key=60175dcf-1ee6-4f12-9544-c0c253e0d60c'),
   );
   print('trying to delete');
+  print('Status ${response.statusCode}');
+}
+
+Future<void> updateTodo(task) async {
+  //not doing anything atm
+  http.Response response = await http.put(
+      Uri.parse(
+          'https://todoapp-api.apps.k8s.gu.se/todos/${task.id}?key=60175dcf-1ee6-4f12-9544-c0c253e0d60c'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(task.toJson()));
 }
 
 class Internetfetcher {

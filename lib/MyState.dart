@@ -3,7 +3,6 @@
 import 'package:flutter/material.dart';
 import 'package:template/api.dart';
 import 'package:provider/provider.dart';
-import 'Task.dart';
 import 'api.dart' as api;
 import 'model.dart';
 
@@ -11,12 +10,10 @@ class MyState extends ChangeNotifier {
   List<Task> _tasks = [];
   List<Task> _filteredTasks = [];
   String _textFieldValue = "hej";
-  Task _task = Task("temp", true, 0);
 
   List get tasks => _tasks;
   List get filteredTasks => _filteredTasks;
   String get textFieldValue => _textFieldValue;
-  Task get task => _task;
 
   void fetchTasks() async {
     var tasks = await getTasks();
@@ -24,7 +21,7 @@ class MyState extends ChangeNotifier {
     notifyListeners();
   }
 
-  void addTask(task) async {
+  void addTask(Task task) async {
     await api.addTask(task);
     fetchTasks();
   }
@@ -44,10 +41,10 @@ class MyState extends ChangeNotifier {
     return _filteredTasks;
   }
 
-  bool? getValue(Task task) {
-    notifyListeners();
-    return _task.done;
-  }
+  // bool? getValue(Task task) {
+  //   notifyListeners();
+  //   return _task.done;
+  // }
 
   // void reassignId() {
   //   for (int i = 0; i < _tasks.length; i++) {
@@ -55,10 +52,6 @@ class MyState extends ChangeNotifier {
   //     _tasks[i].setId(i);
   //   }
   // }
-
-  void setTask(task) {
-    _task = task;
-  }
 
   void changeValue(task, boolean) {
     task.done = boolean;
@@ -82,7 +75,7 @@ class MyState extends ChangeNotifier {
   }
 
   void removeAtList(Task task) {
-    //tasks.removeAt(task.id);
+    tasks.remove(task);
     notifyListeners();
   }
 }

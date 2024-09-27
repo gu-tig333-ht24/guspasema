@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import 'MyState.dart';
-import 'Task.dart';
 import 'model.dart';
 import 'api.dart';
 
@@ -129,7 +128,6 @@ Widget _item(BuildContext context, Task task) {
                 value: task.done,
                 //value: state.tasks[task.].isComplete,
                 onChanged: (isComplete) {
-                  context.read<MyState>().setTask(task);
                   context.read<MyState>().changeValue(task, isComplete);
                 }),
           ),
@@ -137,7 +135,7 @@ Widget _item(BuildContext context, Task task) {
         Expanded(
           child: Consumer<MyState>(
             builder: (context, state, _) => Text(
-              state.task.title,
+              task.title,
               style: task.done!
                   ? TextStyle(
                       decoration: TextDecoration.lineThrough, fontSize: 24)
@@ -154,7 +152,7 @@ Widget _item(BuildContext context, Task task) {
             elevation: 0,
             onPressed: () async {
               //context.read<MyState>().removeFromList(task.id);
-              context.read<MyState>().removeAtList(task);
+              //context.read<MyState>().removeAtList(task);
               await deleteTask(task);
               context.read<MyState>().fetchTasks();
               //task.decreaseId();
@@ -227,11 +225,10 @@ class AddTask extends StatelessWidget {
               onPressed: () async {
                 // var result = await fetchsomeStuff();
                 //Dostuff();
-                Dostuff();
-                getTasks();
-                Task task = Task('test25', false);
-                print(task.title);
-                print(jsonEncode(task.toJson()));
+                //getTasks();
+                Task task = Task(fieldText, false);
+                //print(task.title);
+                //print(jsonEncode(task.toJson()));
                 await addTask(task);
                 context.read<MyState>().fetchTasks();
                 //context.read<MyState>().addToList(

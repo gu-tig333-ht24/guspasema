@@ -4,16 +4,17 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 
 class Task {
-  final String title;
+  String title;
   bool? done = false;
-  int? id;
+  String? id;
 
-  Task(this.title, this.done, [this.id]) {} //constructor för task
+  Task(this.title, this.done, [this.id]);
 
   factory Task.fromJson(Map<String, dynamic> json) {
     return Task(
       json['title'],
       json['done'],
+      json['id'],
     );
   }
 //json['${id ?? "id"}']
@@ -24,13 +25,13 @@ class Task {
     };
   }
 
-  int? getId() {
-    if (id != null) {
-      return id;
-    } else {
-      return 0;
-    }
-  }
+  // int? getId() {
+  //   if (id != null) {
+  //     return id;
+  //   } else {
+  //     return 0;
+  //   }
+  // }
 
   // void decreaseId() {
   //   if (id != null) {
