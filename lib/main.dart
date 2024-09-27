@@ -153,7 +153,6 @@ Widget _item(BuildContext context, Task task) {
             onPressed: () async {
               await deleteTask(task);
               context.read<MyState>().fetchTasks();
-              context.read<MyState>().filterLists();
             },
             backgroundColor: Colors.transparent,
             foregroundColor: Colors.black,
@@ -225,7 +224,6 @@ class AddTask extends StatelessWidget {
                       Task(context.read<MyState>().textFieldValue, false);
                   await addTask(task);
                   context.read<MyState>().fetchTasks();
-                  context.read<MyState>().filterLists();
                 })
           ],
         ),

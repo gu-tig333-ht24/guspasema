@@ -18,6 +18,8 @@ class MyState extends ChangeNotifier {
   void fetchTasks() async {
     var tasks = await getTasks();
     _tasks = tasks;
+    filterLists();
+    await Future.delayed(Duration(seconds: 1));
     notifyListeners();
   }
 
