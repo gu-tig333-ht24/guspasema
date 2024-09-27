@@ -1,33 +1,41 @@
-import "main.dart";
-import 'package:provider/provider.dart';
+// ignore_for_file: file_names
+
 import 'package:flutter/material.dart';
+import 'package:template/api.dart';
+import 'package:provider/provider.dart';
 import 'Task.dart';
+import 'api.dart' as api;
+import 'model.dart';
 
 class MyState extends ChangeNotifier {
-  final List<Task> _tasks = [];
+  List<Task> _tasks = [];
   List<Task> _filteredTasks = [];
-  String _textFieldValue = "";
-  int _taskId = 0;
+  String _textFieldValue = "hej";
   Task _task = Task("temp", true, 0);
-
-  List<Task> _listDone = [];
-  List<Task> _listunDone = [];
 
   List get tasks => _tasks;
   List get filteredTasks => _filteredTasks;
-  List get listDone => _listDone;
-  List get listunDone => _listunDone;
   String get textFieldValue => _textFieldValue;
-  int get taskId => _taskId;
   Task get task => _task;
+
+  void fetchTasks() async {
+    var tasks = await getTasks();
+    _tasks = tasks;
+    notifyListeners();
+  }
+
+  void addTask(task) async {
+    await api.addTask(task);
+    fetchTasks();
+  }
 
   void filterLists(bool? filter) {
     if (filter == null) {
       _filteredTasks = _tasks;
     } else if (filter == true) {
-      _filteredTasks = _tasks.where((i) => i.isComplete == true).toList();
+      _filteredTasks = _tasks.where((i) => i.done == true).toList();
     } else {
-      _filteredTasks = _tasks.where((i) => i.isComplete == false).toList();
+      _filteredTasks = _tasks.where((i) => i.done == false).toList();
     }
     notifyListeners();
   }
@@ -36,47 +44,25 @@ class MyState extends ChangeNotifier {
     return _filteredTasks;
   }
 
-  List<Task> getWholeList() {
-    return _tasks;
-  }
-
-  List<Task> getListDone() {
-    return _listDone;
-  }
-
-  List<Task> GetlistunDone() {
-    return _listunDone;
-  }
-
   bool? getValue(Task task) {
     notifyListeners();
-    return _task.isComplete;
+    return _task.done;
   }
 
-  void reassignId() {
-    for (int i = 0; i < _tasks.length; i++) {
-      //_tasks[i]._taskId = i;
-      _tasks[i].setId(i);
-    }
-  }
+  // void reassignId() {
+  //   for (int i = 0; i < _tasks.length; i++) {
+  //     //_tasks[i]._taskId = i;
+  //     _tasks[i].setId(i);
+  //   }
+  // }
 
   void setTask(task) {
     _task = task;
   }
 
-  void changeValue(id, boolean) {
-    tasks[id].isComplete = boolean;
+  void changeValue(task, boolean) {
+    task.done = boolean;
 
-    notifyListeners();
-  }
-
-  void increamentId() {
-    _taskId++;
-    notifyListeners();
-  }
-
-  void decreaseId() {
-    _taskId--;
     notifyListeners();
   }
 
@@ -85,7 +71,7 @@ class MyState extends ChangeNotifier {
     notifyListeners();
   }
 
-  void addToList(task) {
+  void addToList(Task task) async {
     tasks.add(task);
     notifyListeners();
   }
@@ -96,7 +82,7 @@ class MyState extends ChangeNotifier {
   }
 
   void removeAtList(Task task) {
-    tasks.removeAt(task.id);
+    //tasks.removeAt(task.id);
     notifyListeners();
   }
 }
