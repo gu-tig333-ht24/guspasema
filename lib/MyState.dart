@@ -2,7 +2,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:template/api.dart';
-import 'package:provider/provider.dart';
 import 'api.dart' as api;
 import 'model.dart';
 
@@ -10,6 +9,7 @@ class MyState extends ChangeNotifier {
   List<Task> _tasks = [];
   List<Task> _filteredTasks = [];
   String _textFieldValue = "hej";
+  bool? filter;
 
   List get tasks => _tasks;
   List get filteredTasks => _filteredTasks;
@@ -21,12 +21,18 @@ class MyState extends ChangeNotifier {
     notifyListeners();
   }
 
+  void setFilter(bool? filterbool) {
+    filter = filterbool;
+    notifyListeners();
+  }
+
   void addTask(Task task) async {
     await api.addTask(task);
     fetchTasks();
+    notifyListeners();
   }
 
-  void filterLists(bool? filter) {
+  void filterLists() {
     if (filter == null) {
       _filteredTasks = _tasks;
     } else if (filter == true) {
@@ -40,18 +46,6 @@ class MyState extends ChangeNotifier {
   List<Task> getFilteredList() {
     return _filteredTasks;
   }
-
-  // bool? getValue(Task task) {
-  //   notifyListeners();
-  //   return _task.done;
-  // }
-
-  // void reassignId() {
-  //   for (int i = 0; i < _tasks.length; i++) {
-  //     //_tasks[i]._taskId = i;
-  //     _tasks[i].setId(i);
-  //   }
-  // }
 
   void changeValue(task, boolean) {
     task.done = boolean;

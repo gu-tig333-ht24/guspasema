@@ -10,6 +10,7 @@ void main() {
   MyState state = MyState();
 
   state.fetchTasks();
+  state.getFilteredList();
   runApp(
     ChangeNotifierProvider(
       create: (context) => state,
@@ -35,7 +36,6 @@ class MyHome extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var tasks = context.watch<MyState>().tasks;
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -64,18 +64,17 @@ class MyHome extends StatelessWidget {
                   ],
               onSelected: (result) {
                 if (result == 0) {
-                  context.read<MyState>().filterLists(null);
-                  //print(context.read<MyState>().filteredTasks);
-                  //filteredList = context.read<MyState>().getWholeList();
+                  context.read<MyState>().setFilter(null);
+                  context.read<MyState>().filterLists();
+                  //context.read<MyState>().filterLists(null);
                 } else if (result == 1) {
-                  context.read<MyState>().filterLists(true);
-                  //filteredList = context.read<MyState>().getListDone();
-                  //print(context.read<MyState>().filteredTasks);
-                  //print(filteredList);
+                  context.read<MyState>().setFilter(true);
+                  context.read<MyState>().filterLists();
+                  //context.read<MyState>().filterLists(true);
                 } else if (result == 2) {
-                  context.read<MyState>().filterLists(false);
-                  //print(context.read<MyState>().filteredTasks);
-                  //filteredList = context.read<MyState>().GetlistunDone();
+                  context.read<MyState>().setFilter(false);
+                  context.read<MyState>().filterLists();
+                  //context.read<MyState>().filterLists(false);
                 }
               }),
         ],
@@ -83,10 +82,11 @@ class MyHome extends StatelessWidget {
 
       body: Consumer<MyState>(
         builder: (context, state, _) => ListView(
-          //context.watch<MyState>().filteredTasks.map((task) => _item(context, task)).toList(),
-          children: tasks
+          children: context
+              .watch<MyState>()
+              .getFilteredList()
               .map((task) => _item(context, task))
-              .toList(), //map är en iterator som returerar en lista
+              .toList(),
         ),
       ), //när du klickar på knappen så kommer du navigeras till AddTask vyn
       //den gör detta via en stack, och vyn pushas till toppen av stacken med funktionen push
@@ -126,9 +126,9 @@ Widget _item(BuildContext context, Task task) {
                 tristate: false,
                 activeColor: Colors.black,
                 value: task.done,
-                //value: state.tasks[task.].isComplete,
                 onChanged: (isComplete) {
                   context.read<MyState>().changeValue(task, isComplete);
+                  updateTask(task);
                 }),
           ),
         ),
@@ -151,12 +151,9 @@ Widget _item(BuildContext context, Task task) {
             heroTag: null,
             elevation: 0,
             onPressed: () async {
-              //context.read<MyState>().removeFromList(task.id);
-              //context.read<MyState>().removeAtList(task);
               await deleteTask(task);
               context.read<MyState>().fetchTasks();
-              //task.decreaseId();
-              //context.read<MyState>().decreaseId();
+              context.read<MyState>().filterLists();
             },
             backgroundColor: Colors.transparent,
             foregroundColor: Colors.black,
@@ -210,34 +207,26 @@ class AddTask extends StatelessWidget {
                   }),
             ),
             FloatingActionButton.extended(
-              heroTag: "addbutton1",
-              //extended gör att både en icon och text kan vara i knappen
-              elevation: 0,
-              label: Text("ADD",
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
-              icon: Icon(
-                Icons.add,
-                size: 25,
-              ),
-              backgroundColor: Colors.transparent,
-              foregroundColor: Colors.black,
-              splashColor: const Color.fromARGB(255, 202, 202, 202),
-              onPressed: () async {
-                // var result = await fetchsomeStuff();
-                //Dostuff();
-                //getTasks();
-                Task task = Task(fieldText, false);
-                //print(task.title);
-                //print(jsonEncode(task.toJson()));
-                await addTask(task);
-                context.read<MyState>().fetchTasks();
-                //context.read<MyState>().addToList(
-                // Task(context.read<MyState>().textFieldValue, false));
-
-                //context.read<MyState>().increamentId();
-                //context.read<MyState>().reassignId();
-              }, //knappen gör inget än
-            )
+                heroTag: "addbutton1",
+                //extended gör att både en icon och text kan vara i knappen
+                elevation: 0,
+                label: Text("ADD",
+                    style:
+                        TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
+                icon: Icon(
+                  Icons.add,
+                  size: 25,
+                ),
+                backgroundColor: Colors.transparent,
+                foregroundColor: Colors.black,
+                splashColor: const Color.fromARGB(255, 202, 202, 202),
+                onPressed: () async {
+                  Task task =
+                      Task(context.read<MyState>().textFieldValue, false);
+                  await addTask(task);
+                  context.read<MyState>().fetchTasks();
+                  context.read<MyState>().filterLists();
+                })
           ],
         ),
       ),
