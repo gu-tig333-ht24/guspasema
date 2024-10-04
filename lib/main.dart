@@ -1,11 +1,16 @@
+import 'dart:convert';
+
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import 'MyState.dart';
-import 'Task.dart';
+import 'model.dart';
+import 'api.dart';
 
 void main() {
   MyState state = MyState();
 
+  state.fetchTasks();
+  state.getFilteredList();
   runApp(
     ChangeNotifierProvider(
       create: (context) => state,
@@ -28,10 +33,9 @@ class MyApp extends StatelessWidget {
 
 class MyHome extends StatelessWidget {
   // This widget is the root of your application.
+
   @override
   Widget build(BuildContext context) {
-    var filteredList = context.watch<MyState>().filteredTasks;
-    //var filteredList = context.watch<MyState>().tasks;
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -60,29 +64,26 @@ class MyHome extends StatelessWidget {
                   ],
               onSelected: (result) {
                 if (result == 0) {
-                  context.read<MyState>().filterLists(null);
-                  print(context.read<MyState>().filteredTasks);
-                  //filteredList = context.read<MyState>().getWholeList();
+                  context.read<MyState>().setFilter(null);
+                  context.read<MyState>().filterLists();
                 } else if (result == 1) {
-                  context.read<MyState>().filterLists(true);
-                  //filteredList = context.read<MyState>().getListDone();
-                  print(context.read<MyState>().filteredTasks);
-                  print(filteredList);
+                  context.read<MyState>().setFilter(true);
+                  context.read<MyState>().filterLists();
                 } else if (result == 2) {
-                  context.read<MyState>().filterLists(false);
-                  print(context.read<MyState>().filteredTasks);
-                  //filteredList = context.read<MyState>().GetlistunDone();
+                  context.read<MyState>().setFilter(false);
+                  context.read<MyState>().filterLists();
                 }
               }),
         ],
       ),
+
       body: Consumer<MyState>(
         builder: (context, state, _) => ListView(
           children: context
               .watch<MyState>()
-              .filteredTasks
+              .getFilteredList()
               .map((task) => _item(context, task))
-              .toList(), //map är en iterator som returerar en lista
+              .toList(),
         ),
       ), //när du klickar på knappen så kommer du navigeras till AddTask vyn
       //den gör detta via en stack, och vyn pushas till toppen av stacken med funktionen push
@@ -108,8 +109,6 @@ class MyHome extends StatelessWidget {
 }
 
 Widget _item(BuildContext context, Task task) {
-  var tasks = context.watch<MyState>().tasks;
-
   return GestureDetector(
     //gesture detect används eftersom det inte är en knapp utan bara en lista med items
     onTap: () {},
@@ -123,18 +122,18 @@ Widget _item(BuildContext context, Task task) {
             builder: (context, state, _) => Checkbox(
                 tristate: false,
                 activeColor: Colors.black,
-                value: state.tasks[task.id].isComplete,
+                value: task.done,
                 onChanged: (isComplete) {
-                  context.read<MyState>().setTask(task);
-                  context.read<MyState>().changeValue(task.id, isComplete);
+                  context.read<MyState>().changeValue(task, isComplete);
+                  updateTask(task);
                 }),
           ),
         ),
         Expanded(
           child: Consumer<MyState>(
             builder: (context, state, _) => Text(
-              task.taskName,
-              style: state.tasks[task.id].isComplete!
+              task.title,
+              style: task.done!
                   ? TextStyle(
                       decoration: TextDecoration.lineThrough, fontSize: 24)
                   : TextStyle(fontSize: 24),
@@ -144,16 +143,12 @@ Widget _item(BuildContext context, Task task) {
         ),
         Padding(
           padding: EdgeInsets.all(15),
-          // child: Icon(Icons.close),
           child: FloatingActionButton(
             heroTag: null,
             elevation: 0,
-            onPressed: () {
-              //context.read<MyState>().removeFromList(task.id);
-              context.read<MyState>().removeAtList(task);
-              context.read<MyState>().reassignId();
-              //task.decreaseId();
-              //context.read<MyState>().decreaseId();
+            onPressed: () async {
+              await deleteTask(task);
+              context.read<MyState>().fetchTasks();
             },
             backgroundColor: Colors.transparent,
             foregroundColor: Colors.black,
@@ -207,27 +202,25 @@ class AddTask extends StatelessWidget {
                   }),
             ),
             FloatingActionButton.extended(
-              heroTag: "addbutton1",
-              //extended gör att både en icon och text kan vara i knappen
-              elevation: 0,
-              label: Text("ADD",
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
-              icon: Icon(
-                Icons.add,
-                size: 25,
-              ),
-              backgroundColor: Colors.transparent,
-              foregroundColor: Colors.black,
-              splashColor: const Color.fromARGB(255, 202, 202, 202),
-              onPressed: () {
-                context.read<MyState>().addToList(
-                    // Task(context.read<MyState>().textFieldValue, false));
-
-                    new Task(fieldText, false, context.read<MyState>().taskId));
-                context.read<MyState>().increamentId();
-                context.read<MyState>().reassignId();
-              }, //knappen gör inget än
-            )
+                heroTag: "addbutton1",
+                //extended gör att både en icon och text kan vara i knappen
+                elevation: 0,
+                label: Text("ADD",
+                    style:
+                        TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
+                icon: Icon(
+                  Icons.add,
+                  size: 25,
+                ),
+                backgroundColor: Colors.transparent,
+                foregroundColor: Colors.black,
+                splashColor: const Color.fromARGB(255, 202, 202, 202),
+                onPressed: () async {
+                  Task task =
+                      Task(context.read<MyState>().textFieldValue, false);
+                  await addTask(task);
+                  context.read<MyState>().fetchTasks();
+                })
           ],
         ),
       ),
