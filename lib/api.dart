@@ -15,20 +15,11 @@ Future<List<Task>> getTasks() async {
 
   String body = response.body;
   List tasksJson = jsonDecode(body);
-  if (tasksJson.length != 0) //debug
-  {
-    print('${tasksJson[tasksJson.length - 1]['title']}');
-    print('${tasksJson[tasksJson.length - 1]}');
-    print('body: ${response.body}');
-    print('Status ${response.statusCode}');
-    print('length ${tasksJson.length}');
-  }
 
   return tasksJson.map((json) => Task.fromJson(json)).toList();
 }
 
 Future<void> addTask(Task task) async {
-  print('this is the tasks title ${task.title}');
   http.Response response = await http.post(
       Uri.parse('$ENDPOINT/todos?key=60175dcf-1ee6-4f12-9544-c0c253e0d60c'),
       headers: {"Content-Type": "application/json"},
@@ -50,7 +41,6 @@ Future<void> deleteTask(task) async {
 }
 
 Future<void> updateTask(task) async {
-  //not doing anything atm
   http.Response response = await http.put(
       Uri.parse(
           'https://todoapp-api.apps.k8s.gu.se/todos/${task.id}?key=60175dcf-1ee6-4f12-9544-c0c253e0d60c'),

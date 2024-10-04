@@ -66,15 +66,12 @@ class MyHome extends StatelessWidget {
                 if (result == 0) {
                   context.read<MyState>().setFilter(null);
                   context.read<MyState>().filterLists();
-                  //context.read<MyState>().filterLists(null);
                 } else if (result == 1) {
                   context.read<MyState>().setFilter(true);
                   context.read<MyState>().filterLists();
-                  //context.read<MyState>().filterLists(true);
                 } else if (result == 2) {
                   context.read<MyState>().setFilter(false);
                   context.read<MyState>().filterLists();
-                  //context.read<MyState>().filterLists(false);
                 }
               }),
         ],
@@ -146,7 +143,6 @@ Widget _item(BuildContext context, Task task) {
         ),
         Padding(
           padding: EdgeInsets.all(15),
-          // child: Icon(Icons.close),
           child: FloatingActionButton(
             heroTag: null,
             elevation: 0,
